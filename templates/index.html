@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <title>GardenPi</title>
+    </head>
+    <body>
+        <h1>GardenPi Home</h1>
+        <p>What are you looking for:</p>
+        <br/>
+
+        <form action="{{url}}/air-temperature" method="get">
+            <button type="submit">Air Temperature</button>
+        </form>
+        <br/>
+
+        <form action="{{url}}/air-humidity" method="get">
+            <button type="submit">Air Humidity</button>
+        </form>
+        <br/>
+ 
+        <form action="{{url}}/light" method="get">
+            <button type="submit">Light</button>
+        </form>
+        <br/>
+        
+        <form action="{{url}}/soil-moisture" method="get">
+            <button type="submit">Soil Moisture</button>
+        </form>
+        <br/>
+ 
+        <form action="{{url}}/watering-sys-status" method="get">
+            <button type="submit">Watering System Status</button>
+        </form>
+    </body>
+</html>
