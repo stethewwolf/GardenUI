@@ -1,6 +1,5 @@
 from flask import Flask
 from flask import render_template
-from flask import Markup
 
 app = Flask(__name__)
 
@@ -78,7 +77,7 @@ def soil_moisture():
         my_url=UI_BASE_URL
     else:
         my_url='{}:{}/'.format(UI_BASE_URL, UI_PORT)
-    return render_template("chart.html", page_name=page_name, page_description=page_description, url=my_url, labels=labels, values=value, graph_type='line')
+    return render_template("chart.html", page_name=page_name, page_description=page_description, url=my_url, labels=labels, values=values, graph_type='line')
  
 
 @app.route('/watering-sys-status')
