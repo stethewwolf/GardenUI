@@ -19,6 +19,8 @@
     </head>
 
     <body id="page-top">
+        <iframe name="hiddenFrame" width="0" height="0" border="0" style="display: none;"></iframe>
+
         <!-- Page Wrapper -->
         <div id="wrapper">
         
@@ -101,19 +103,44 @@
                     <p class="h3 mb-0 text-gray-800">{{page_description}}</p>
                 </div>
                 
-                <div class="row">
+                <div class="row h-75">
 
-                    <div class="col-xl-8 col-lg-7">
-
+                    <div class="col-10 h-100">
                         <!-- Area Chart -->
-                        <div class="card shadow mb-4">
+                        <div class="card shadow h-100">
+                            <a href="#collapse24h" class="d-block card-header py-3" data-toggle="collapse"
+                                role="button" aria-expanded="true" aria-controls="collapse24h">
+                                <h6 class="m-0 font-weight-bold text-primary">Last 24H</h6>
+                            </a>
+
+                            <div class="card-body h-100">
+                                <div class="chart-area" >
+                                <canvas id="DataChart" height="100%" ></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-2">
+                        <!-- Control Card -->
+                        <div class="card shadow align-top">
                             <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">{{page_name}}</h6>
+                                <h6 class="font-weight-bold text-primary">Controls</h6>
                             </div>
                             <div class="card-body">
-                                <div class="chart-area">
-                                <canvas id="DataChart"></canvas>
-                                </div>
+
+                                <form action="/cmd" method="post" target="hiddenFrame">
+                                    <label for="cars">Request an Action:</label>
+                                    <select id="cmd" name="cmd">
+                                        <option value="water_enable">Enable Water</option>
+                                        <option value="water_disable">Disable Water</option>
+                                        <option value="water_on">Water On</option>
+                                        <option value="water_off">Water Off</option>
+                                        <option value="read_values">Request Fresh Data</option>
+                                    </select>
+                                    <input type="hidden" name="src_page" value="{{page_name}}">
+                                    <input type="submit">
+                                </form>
                             </div>
                         </div>
                     </div>

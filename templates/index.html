@@ -49,7 +49,7 @@
         
                 <!-- Heading -->
                 <div class="sidebar-heading">
-                    Graphs
+                    Charts
                 </div>
 
                 <!-- Nav Item - Air Temperature -->
@@ -92,6 +92,8 @@
             <!-- Begin Page Content -->
             <div class="container-fluid">
 
+                <iframe name="hiddenFrame" width="0" height="0" border="0" style="display: none;"></iframe>
+
                 <!-- Page Heading -->
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <h1 class="h3 mb-0 text-gray-800">Home</h1>
@@ -103,16 +105,16 @@
                 </div>
 
                 <!-- Content Row -->
-                <div class="row">
+                <div class="row h-25">
                     <!-- Air Temperature Card -->
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4 h-50">
                         <div class="card border-left-success shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                             Air Temperature</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{air_temperature}}</div>
                                     </div>
                                 </div>
                             </div>
@@ -120,29 +122,56 @@
                     </div>
 
                     <!-- Air Humidity Card  -->
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4 h-50">
                         <div class="card border-left-success shadow h-100 py-2">
                              <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                            Air Umidity</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                            Air Humidity</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{air_humidity}}</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <div class="col-3 h-75">
+                        <!-- Control Card -->
+                        <div class="card shadow align-top">
+                            <div class="card-header py-3">
+                                <h6 class="font-weight-bold text-primary">Controls</h6>
+                            </div>
+                            <div class="card-body">
+
+                                    <form action="/cmd" method="post" target="hiddenFrame">
+                                        <label for="cars">Request an Action:</label>
+                                        <select id="cmd" name="cmd">
+                                            <option value="water_enable">Enable Water</option>
+                                            <option value="water_disable">Disable Water</option>
+                                            <option value="water_on">Water On</option>
+                                            <option value="water_off">Water Off</option>
+                                            <option value="read_values">Request Fresh Data</option>
+                                        </select>
+                                        <input type="hidden" name="src_page" value="{{page_name}}">
+                                        <input type="submit">
+                                    </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> 
+
+                <div class="row h-25">
                     <!-- Light Card -->
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4 h-50">
                         <div class="card border-left-success shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                             Light</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{light}}</div>
                                     </div>
                                 </div>
                             </div>
@@ -150,35 +179,39 @@
                     </div>
 
                     <!-- Soil Moisture Card -->
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4 h-50">
                         <div class="card border-left-success shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                             Souil Moisture</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{soil_moisture}}</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                </div>
+
+                <div class="row h-25">
                     <!-- Watering System Status Card -->
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4 h-50">
                         <div class="card border-left-success shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                             Watering System Status</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{watering_sys_stat}}</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div> 
+
+                </div>
             </div>
         </div>
 
