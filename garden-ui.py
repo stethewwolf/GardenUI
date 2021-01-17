@@ -197,7 +197,6 @@ def get_values(value_type, device=None, start_datetime=datetime.datetime.now()-d
     
     return ret_values
 
-
 @app.route('/')
 @app.route('/index')
 @app.route('/index.html')
