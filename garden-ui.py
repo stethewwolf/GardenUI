@@ -17,7 +17,8 @@ mqtt.subscribe('garden/#')
 
 UI_IP='127.0.0.1'
 UI_PORT=8180
-UI_BASE_URL='http://localhost'
+UI_BASE_URL='http://garden.stobi.local/'
+IGNORE_PORTS=True
 
 last_read_values = {
     'air_temperature' : 0,
@@ -206,7 +207,7 @@ def index():
     global last_read_values
     print(last_read_values)
 
-    if UI_PORT == 80 or UI_PORT == 443:
+    if UI_PORT == 80 or UI_PORT == 443 or IGNORE_PORTS:
         my_url=UI_BASE_URL
     else:
         my_url='{}:{}/'.format(UI_BASE_URL, UI_PORT)
@@ -221,7 +222,7 @@ def air_temperature():
     values = [ float(d['value']) for d in data ]
     colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA","#ABCDEF", "#DDDDDD", "#ABCABC"  ]
 
-    if UI_PORT == 80 or UI_PORT == 443:
+    if UI_PORT == 80 or UI_PORT == 443 or IGNORE_PORTS:
         my_url=UI_BASE_URL
     else:
         my_url='{}:{}/'.format(UI_BASE_URL, UI_PORT)
@@ -237,7 +238,7 @@ def air_umidity():
     values = [ float(d['value']) for d in data ]
     colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA","#ABCDEF", "#DDDDDD", "#ABCABC"  ]
     
-    if UI_PORT == 80 or UI_PORT == 443:
+    if UI_PORT == 80 or UI_PORT == 443 or IGNORE_PORTS:
         my_url=UI_BASE_URL
     else:
         my_url='{}:{}/'.format(UI_BASE_URL, UI_PORT)
@@ -252,7 +253,7 @@ def light():
     labels = [ str(d['time']) for d in data ]
     values = [ float(d['value']) for d in data ]
     colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA","#ABCDEF", "#DDDDDD", "#ABCABC"  ]
-    if UI_PORT == 80 or UI_PORT == 443:
+    if UI_PORT == 80 or UI_PORT == 443 or IGNORE_PORTS:
         my_url=UI_BASE_URL
     else:
         my_url='{}:{}/'.format(UI_BASE_URL, UI_PORT)
@@ -267,7 +268,7 @@ def soil_moisture():
     values = [ float(d['value']) for d in data ]
  
     colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA","#ABCDEF", "#DDDDDD", "#ABCABC"  ]
-    if UI_PORT == 80 or UI_PORT == 443:
+    if UI_PORT == 80 or UI_PORT == 443 or IGNORE_PORTS:
         my_url=UI_BASE_URL
     else:
         my_url='{}:{}/'.format(UI_BASE_URL, UI_PORT)
@@ -287,7 +288,7 @@ def watering_sys():
             values.append(0)
 
     colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA","#ABCDEF", "#DDDDDD", "#ABCABC"  ]
-    if UI_PORT == 80 or UI_PORT == 443:
+    if UI_PORT == 80 or UI_PORT == 443 or IGNORE_PORTS:
         my_url=UI_BASE_URL
     else:
         my_url='{}:{}/'.format(UI_BASE_URL, UI_PORT)
