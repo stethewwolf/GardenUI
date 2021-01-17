@@ -16,7 +16,7 @@ mqtt = Mqtt(app)
 mqtt.subscribe('garden/#')
 
 UI_IP='127.0.0.1'
-UI_PORT=8081
+UI_PORT=8180
 UI_BASE_URL='http://localhost'
 
 last_read_values = {
