@@ -50,50 +50,46 @@ DB_GET_VALUE = 'SELECT value,datetime,device_id from `read_values`\
 DB_GET_VALUE_BY_DEVICE = 'SELECT value,datetime,device_id from `read_values`\
  WHERE datetime >= ? AND datetime<= ? AND device_id==? AND value_type_id == ?;'
 
+con = sqlite3.connect(DB_FILE)
+
 def create_db():
     try:  
-        with sqlite3.connect(DB_FILE) as con:  
-            cur = con.cursor()  
-            cur.execute(DB_CREATE_TABLE_READ_VALUES)
-            cur.execute(DB_CREATE_TABLE_VALUE_TYPES)
-            cur.execute(DB_CREATE_TABLE_DEVICES)
-            con.commit()  
+        cur = con.cursor()  
+        cur.execute(DB_CREATE_TABLE_READ_VALUES)
+        cur.execute(DB_CREATE_TABLE_VALUE_TYPES)
+        cur.execute(DB_CREATE_TABLE_DEVICES)
+        con.commit()  
         msg = "db created"  
     except:  
         con.rollback()  
         msg = "We can not create the db"  
     finally:
-        con.close()    
         print(msg)
 
 def insert_device(device_name):
     try:  
-        with sqlite3.connect(DB_FILE) as con:  
-            cur = con.cursor()  
-            cur.execute(DB_INSERT_DEVICE,[device_name])
-            con.commit()  
+        cur = con.cursor()  
+        cur.execute(DB_INSERT_DEVICE,[device_name])
+        con.commit()  
         msg = "added {} to devices".format(device_name)  
     except:  
         con.rollback()  
         msg = "We can not add {} to devices".format(device_name)  
     finally:
-        con.close()    
         print(msg)
 
     return get_device_id(device_name)
 
 def insert_value_type(value_type):
     try:  
-        with sqlite3.connect(DB_FILE) as con:  
-            cur = con.cursor()  
-            cur.execute(DB_INSERT_VALUE_TYPE,[value_type])
-            con.commit()  
+        cur = con.cursor()  
+        cur.execute(DB_INSERT_VALUE_TYPE,[value_type])
+        con.commit()  
         msg = "added {} to value_types".format(value_type)  
     except:  
         con.rollback()  
         msg = "We can not add {} to value_types".format(value_type)  
     finally:
-        con.close()    
         print(msg)
     
     return get_value_type_id(value_type)
@@ -101,20 +97,18 @@ def insert_value_type(value_type):
 def get_device_id(device_name):
     id = None
     try:  
-        with sqlite3.connect(DB_FILE) as con:  
-            cur = con.cursor()  
-            cur.execute(DB_GET_DEVICE_BY_NAME,[device_name])
-            row = cur.fetchone()
+        cur = con.cursor()  
+        cur.execute(DB_GET_DEVICE_BY_NAME,[device_name])
+        row = cur.fetchone()
 
-            if row is not None:
-                id = int(row[0])
+        if row is not None:
+            id = int(row[0])
 
-            msg = "found id {} for device {}".format(id,device_name)  
+        msg = "found id {} for device {}".format(id,device_name)  
     except:  
         msg = "Id for device {} not found".format(device_name)  
         id = None
     finally:
-        con.close()    
         print(msg)
 
     return id
@@ -122,21 +116,19 @@ def get_device_id(device_name):
 def get_value_type_id(value_type):
     id = None
     try:  
-        with sqlite3.connect(DB_FILE) as con:  
-            cur = con.cursor()  
-            cur.execute(DB_GET_VALUE_TYPE_BY_NAME,[value_type])
-            row = cur.fetchone()
+        cur = con.cursor()  
+        cur.execute(DB_GET_VALUE_TYPE_BY_NAME,[value_type])
+        row = cur.fetchone()
 
-            if row is not None:
-                id = int(row[0])
-                msg = "found id {} for value_type {}".format(id,value_type)  
-            else:
-                msg = "not found  id for value_type {}".format(id,value_type)  
+        if row is not None:
+            id = int(row[0])
+            msg = "found id {} for value_type {}".format(id,value_type)  
+        else:
+            msg = "not found  id for value_type {}".format(id,value_type)  
     except:  
         msg = "Id for value_type {} lead to exception".format(value_type)  
         id = -1
     finally:
-        con.close()    
         print(msg)
     return id
 
@@ -154,16 +146,14 @@ def add_value(value, value_type, device):
     read_time = datetime.datetime.now()
 
     try:  
-        with sqlite3.connect(DB_FILE) as con:  
-            cur = con.cursor()  
-            cur.execute(DB_INSERT_READ_VALUE,[value,read_time,device_id,value_id])
-            con.commit()  
+        cur = con.cursor()  
+        cur.execute(DB_INSERT_READ_VALUE,[value,read_time,device_id,value_id])
+        con.commit()  
         msg = "added value {} type {} for device {} at {}".format(value,value_type,device,read_time)  
     except:  
         con.rollback()  
         msg = "failed to add value {} type {} for device {} at {}".format(value,value_type,device,read_time)  
     finally:
-        con.close()    
         print(msg)
 
 def get_values(value_type, device=None, start_datetime=datetime.datetime.now()-datetime.timedelta(hours=24),end_datetime=datetime.datetime.now()):
@@ -177,22 +167,20 @@ def get_values(value_type, device=None, start_datetime=datetime.datetime.now()-d
 
     if value_type_id is not None:   
         try:  
-            with sqlite3.connect(DB_FILE) as con:  
-                cur = con.cursor()  
+            cur = con.cursor()  
 
-                if device_id is None:
-                    cur.execute(DB_GET_VALUE,[start_datetime,end_datetime,value_type_id])
-                else:
-                    cur.execute(DB_GET_VALUE,[start_datetime,end_datetime,value_type_id,device_id])
+            if device_id is None:
+                cur.execute(DB_GET_VALUE,[start_datetime,end_datetime,value_type_id])
+            else:
+                cur.execute(DB_GET_VALUE,[start_datetime,end_datetime,value_type_id,device_id])
 
-                ret_values = [{'value':row[0],'time':datetime.datetime.strptime(row[1],"%Y-%m-%d %H:%M:%S.%f"),'device':device} for row in cur.fetchall()]
+            ret_values = [{'value':row[0],'time':datetime.datetime.strptime(row[1],"%Y-%m-%d %H:%M:%S.%f"),'device':device} for row in cur.fetchall()]
 
-                msg = "found value_type"  
+            msg = "found value_type"  
         except:  
             msg = "Id for value_type {} lead to exception".format(value_type)  
             id = -1
         finally:
-            con.close()    
             print(msg)
     
     return ret_values
@@ -325,3 +313,4 @@ def handle_mqtt_message(client, userdata, message):
 
 create_db()
 app.run(host=UI_IP, port=UI_PORT)
+con.close()    
