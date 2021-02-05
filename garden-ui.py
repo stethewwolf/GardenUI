@@ -53,6 +53,7 @@ DB_GET_VALUE_BY_DEVICE = 'SELECT value,datetime,device_id from `read_values`\
 con = sqlite3.connect(DB_FILE)
 
 def create_db():
+    global con
     try:  
         cur = con.cursor()  
         cur.execute(DB_CREATE_TABLE_READ_VALUES)
@@ -67,6 +68,7 @@ def create_db():
         print(msg)
 
 def insert_device(device_name):
+    global con
     try:  
         cur = con.cursor()  
         cur.execute(DB_INSERT_DEVICE,[device_name])
@@ -81,12 +83,13 @@ def insert_device(device_name):
     return get_device_id(device_name)
 
 def insert_value_type(value_type):
+    global con
     try:  
         cur = con.cursor()  
         cur.execute(DB_INSERT_VALUE_TYPE,[value_type])
         con.commit()  
         msg = "added {} to value_types".format(value_type)  
-    except:  
+    except Exception:  
         con.rollback()  
         msg = "We can not add {} to value_types".format(value_type)  
     finally:
@@ -95,6 +98,7 @@ def insert_value_type(value_type):
     return get_value_type_id(value_type)
 
 def get_device_id(device_name):
+    global con
     id = None
     try:  
         cur = con.cursor()  
@@ -114,6 +118,7 @@ def get_device_id(device_name):
     return id
 
 def get_value_type_id(value_type):
+    global con
     id = None
     try:  
         cur = con.cursor()  
@@ -133,6 +138,7 @@ def get_value_type_id(value_type):
     return id
 
 def add_value(value, value_type, device):
+    global con
     device_id = get_device_id(device)
 
     if device_id is None:
@@ -157,6 +163,7 @@ def add_value(value, value_type, device):
         print(msg)
 
 def get_values(value_type, device=None, start_datetime=datetime.datetime.now()-datetime.timedelta(hours=24),end_datetime=datetime.datetime.now()):
+    global con
     ret_values = []
 
     value_type_id = get_value_type_id(value_type)
