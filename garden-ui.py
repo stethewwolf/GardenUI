@@ -204,6 +204,7 @@ def get_values(value_type, device=None, start_datetime=datetime.datetime.now()-d
             con.close()
             print(msg)
     
+    print("raw values for {} : {}".format(value_type,ret_values))
     return ret_values
 
 @app.route('/')
@@ -228,6 +229,8 @@ def air_temperature():
     data = get_values('air/temperature')
     labels = [ str(d['time']) for d in data ]
     values = [ float(d['value']) for d in data ]
+
+    print("handled values {}".format(values)) 
 
     if UI_PORT == 80 or UI_PORT == 443 or IGNORE_PORTS:
         my_url=UI_BASE_URL
