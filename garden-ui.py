@@ -137,7 +137,7 @@ def get_value_type_id(value_type):
 
         if row is not None:
             value_id = int(row[0])
-            msg = "found id {} for value_type {}".format(id,value_type)  
+            msg = "found id {} for value_type {}".format(value_id,value_type)  
         else:
             msg = "not found  id for value_type {}".format(value_type)  
     except Exception:  
