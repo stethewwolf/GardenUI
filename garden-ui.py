@@ -315,6 +315,7 @@ def cmd_handler():
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
     global last_read_values
+    print("received message : {}".format(message))
     topic=message.topic
     payload=json.loads(message.payload.decode())
 
