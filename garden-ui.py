@@ -50,41 +50,47 @@ DB_GET_VALUE = 'SELECT value,datetime,device_id from `read_values`\
 DB_GET_VALUE_BY_DEVICE = 'SELECT value,datetime,device_id from `read_values`\
  WHERE datetime >= ? AND datetime<= ? AND device_id==? AND value_type_id == ?;'
 
-con = sqlite3.connect(DB_FILE)
+INDEX_TEMPALTE="index.html"
+CHART_TEMPALTE="chart.html"
 
 def create_db():
-    global con
+    msg = "empty"
     try:  
+        con = sqlite3.connect(DB_FILE)
         cur = con.cursor()  
         cur.execute(DB_CREATE_TABLE_READ_VALUES)
         cur.execute(DB_CREATE_TABLE_VALUE_TYPES)
         cur.execute(DB_CREATE_TABLE_DEVICES)
         con.commit()  
         msg = "db created"  
-    except:  
+    except Exception:  
         con.rollback()  
         msg = "We can not create the db"  
     finally:
+        con.close()
         print(msg)
 
 def insert_device(device_name):
-    global con
+    msg = "empty"
     try:  
+        con = sqlite3.connect(DB_FILE)
         cur = con.cursor()  
         cur.execute(DB_INSERT_DEVICE,[device_name])
         con.commit()  
         msg = "added {} to devices".format(device_name)  
-    except:  
+    except Exception:  
         con.rollback()  
         msg = "We can not add {} to devices".format(device_name)  
     finally:
+        con.close()
         print(msg)
 
     return get_device_id(device_name)
 
 def insert_value_type(value_type):
-    global con
+    msg = "empty"
     try:  
+        con = sqlite3.connect(DB_FILE)
         cur = con.cursor()  
         cur.execute(DB_INSERT_VALUE_TYPE,[value_type])
         con.commit()  
@@ -93,52 +99,57 @@ def insert_value_type(value_type):
         con.rollback()  
         msg = "We can not add {} to value_types".format(value_type)  
     finally:
+        con.close()
         print(msg)
     
     return get_value_type_id(value_type)
 
 def get_device_id(device_name):
-    global con
-    id = None
+    msg = "empty"
+    device_id = None
     try:  
+        con = sqlite3.connect(DB_FILE)
         cur = con.cursor()  
         cur.execute(DB_GET_DEVICE_BY_NAME,[device_name])
         row = cur.fetchone()
 
         if row is not None:
-            id = int(row[0])
+            device_id = int(row[0])
 
-        msg = "found id {} for device {}".format(id,device_name)  
-    except:  
+        msg = "found id {} for device {}".format(device_id,device_name)  
+    except Exception:  
         msg = "Id for device {} not found".format(device_name)  
-        id = None
+        device_id = None
     finally:
+        con.close()
         print(msg)
 
-    return id
+    return device_id
 
 def get_value_type_id(value_type):
-    global con
-    id = None
+    msg = "empty"
+    value_id = None
     try:  
+        con = sqlite3.connect(DB_FILE)
         cur = con.cursor()  
         cur.execute(DB_GET_VALUE_TYPE_BY_NAME,[value_type])
         row = cur.fetchone()
 
         if row is not None:
-            id = int(row[0])
+            value_id = int(row[0])
             msg = "found id {} for value_type {}".format(id,value_type)  
         else:
-            msg = "not found  id for value_type {}".format(id,value_type)  
-    except:  
+            msg = "not found  id for value_type {}".format(value_type)  
+    except Exception:  
         msg = "Id for value_type {} lead to exception".format(value_type)  
-        id = -1
+        value_id = -1
     finally:
+        con.close()
         print(msg)
-    return id
+    return value_id
 
 def add_value(value, value_type, device):
-    global con
+    msg = "empty"
     device_id = get_device_id(device)
 
     if device_id is None:
@@ -152,18 +163,20 @@ def add_value(value, value_type, device):
     read_time = datetime.datetime.now()
 
     try:  
+        con = sqlite3.connect(DB_FILE)
         cur = con.cursor()  
         cur.execute(DB_INSERT_READ_VALUE,[value,read_time,device_id,value_id])
         con.commit()  
         msg = "added value {} type {} for device {} at {}".format(value,value_type,device,read_time)  
-    except:  
+    except Exception:  
         con.rollback()  
         msg = "failed to add value {} type {} for device {} at {}".format(value,value_type,device,read_time)  
     finally:
+        con.close()
         print(msg)
 
 def get_values(value_type, device=None, start_datetime=datetime.datetime.now()-datetime.timedelta(hours=24),end_datetime=datetime.datetime.now()):
-    global con
+    msg = "empty"
     ret_values = []
 
     value_type_id = get_value_type_id(value_type)
@@ -174,6 +187,7 @@ def get_values(value_type, device=None, start_datetime=datetime.datetime.now()-d
 
     if value_type_id is not None:   
         try:  
+            con = sqlite3.connect(DB_FILE)
             cur = con.cursor()  
 
             if device_id is None:
@@ -184,10 +198,10 @@ def get_values(value_type, device=None, start_datetime=datetime.datetime.now()-d
             ret_values = [{'value':row[0],'time':datetime.datetime.strptime(row[1],"%Y-%m-%d %H:%M:%S.%f"),'device':device} for row in cur.fetchall()]
 
             msg = "found value_type"  
-        except:  
+        except Exception:  
             msg = "Id for value_type {} lead to exception".format(value_type)  
-            id = -1
         finally:
+            con.close()
             print(msg)
     
     return ret_values
@@ -205,7 +219,7 @@ def index():
         my_url=UI_BASE_URL
     else:
         my_url='{}:{}/'.format(UI_BASE_URL, UI_PORT)
-    return render_template("index.html", url=my_url, **last_read_values)
+    return render_template(INDEX_TEMPALTE, url=my_url, **last_read_values)
 
 @app.route('/air-temperature')
 def air_temperature():
@@ -214,14 +228,13 @@ def air_temperature():
     data = get_values('air/temperature')
     labels = [ str(d['time']) for d in data ]
     values = [ float(d['value']) for d in data ]
-    colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA","#ABCDEF", "#DDDDDD", "#ABCABC"  ]
 
     if UI_PORT == 80 or UI_PORT == 443 or IGNORE_PORTS:
         my_url=UI_BASE_URL
     else:
         my_url='{}:{}/'.format(UI_BASE_URL, UI_PORT)
 
-    return render_template("chart.html", page_name=page_name, page_description=page_description, url=my_url, labels=labels, values=values, graph_type='line')
+    return render_template(CHART_TEMPALTE, page_name=page_name, page_description=page_description, url=my_url, labels=labels, values=values, graph_type='line')
 
 @app.route('/air-humidity')
 def air_umidity():
@@ -230,14 +243,13 @@ def air_umidity():
     data = get_values('air/humidity')
     labels = [ str(d['time']) for d in data ]
     values = [ float(d['value']) for d in data ]
-    colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA","#ABCDEF", "#DDDDDD", "#ABCABC"  ]
     
     if UI_PORT == 80 or UI_PORT == 443 or IGNORE_PORTS:
         my_url=UI_BASE_URL
     else:
         my_url='{}:{}/'.format(UI_BASE_URL, UI_PORT)
     
-    return render_template("chart.html", page_name=page_name, page_description=page_description, url=my_url, labels=labels, values=values, graph_type='line')
+    return render_template(CHART_TEMPALTE, page_name=page_name, page_description=page_description, url=my_url, labels=labels, values=values, graph_type='line')
 
 @app.route('/light')
 def light():
@@ -246,12 +258,12 @@ def light():
     data = get_values('light')
     labels = [ str(d['time']) for d in data ]
     values = [ float(d['value']) for d in data ]
-    colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA","#ABCDEF", "#DDDDDD", "#ABCABC"  ]
+
     if UI_PORT == 80 or UI_PORT == 443 or IGNORE_PORTS:
         my_url=UI_BASE_URL
     else:
         my_url='{}:{}/'.format(UI_BASE_URL, UI_PORT)
-    return render_template("chart.html", page_name=page_name, page_description=page_description, url=my_url, labels=labels, values=values, graph_type='line')
+    return render_template(CHART_TEMPALTE, page_name=page_name, page_description=page_description, url=my_url, labels=labels, values=values, graph_type='line')
 
 @app.route('/soil-moisture')
 def soil_moisture():
@@ -261,12 +273,11 @@ def soil_moisture():
     labels = [ str(d['time']) for d in data ]
     values = [ float(d['value']) for d in data ]
  
-    colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA","#ABCDEF", "#DDDDDD", "#ABCABC"  ]
     if UI_PORT == 80 or UI_PORT == 443 or IGNORE_PORTS:
         my_url=UI_BASE_URL
     else:
         my_url='{}:{}/'.format(UI_BASE_URL, UI_PORT)
-    return render_template("chart.html", page_name=page_name, page_description=page_description, url=my_url, labels=labels, values=values, graph_type='line')
+    return render_template(CHART_TEMPALTE, page_name=page_name, page_description=page_description, url=my_url, labels=labels, values=values, graph_type='line')
 
 @app.route('/watering-sys-status')
 def watering_sys():
@@ -281,12 +292,11 @@ def watering_sys():
         else:
             values.append(0)
 
-    colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA","#ABCDEF", "#DDDDDD", "#ABCABC"  ]
     if UI_PORT == 80 or UI_PORT == 443 or IGNORE_PORTS:
         my_url=UI_BASE_URL
     else:
         my_url='{}:{}/'.format(UI_BASE_URL, UI_PORT)
-    return render_template("chart.html", page_name=page_name, page_description=page_description, url=my_url, labels=labels, values=values, graph_type='bar')
+    return render_template(CHART_TEMPALTE, page_name=page_name, page_description=page_description, url=my_url, labels=labels, values=values, graph_type='bar')
 
 @app.route("/cmd",methods = ["POST"])
 def cmd_handler():  
@@ -320,4 +330,3 @@ def handle_mqtt_message(client, userdata, message):
 
 create_db()
 app.run(host=UI_IP, port=UI_PORT)
-con.close()    
