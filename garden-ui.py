@@ -175,7 +175,12 @@ def add_value(value, value_type, device):
         con.close()
         print(msg)
 
-def get_values(value_type, device=None, start_datetime=datetime.datetime.now()-datetime.timedelta(hours=24),end_datetime=datetime.datetime.now()):
+def get_values(value_type, device=None, start_datetime=None,end_datetime=None):
+    if start_datetime is None:
+        start_datetime=datetime.datetime.now()-datetime.timedelta(hours=24)
+    if end_datetime is None:
+        end_datetime=datetime.datetime.now()
+
     msg = "empty"
     ret_values = []
 
